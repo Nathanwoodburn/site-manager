@@ -250,9 +250,7 @@ def write_nginx_conf(site):
         add_header Cache-Control 'must-revalidate';
         add_header Content-Type text/plain;
     }}
-    listen 443 ssl;
-    ssl_certificate /root/site-manager/certs/{alt}/cert.crt;
-    ssl_certificate_key /root/site-manager/certs/{alt}/cert.key;
+    {ssl}
     }}
     '''
     with open(f'/etc/nginx/sites-enabled/{id}.conf', 'w') as file:
@@ -286,3 +284,4 @@ def is_icann(domain):
     tlds = [tld for tld in tlds if not tld.startswith('#')]
     if domain.split('.')[-1].upper() in tlds:
         return True
+    return False
