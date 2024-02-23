@@ -18,3 +18,20 @@ cd /root/site-manager
 python3 account.py
 exit
 ```
+
+
+Updating
+--------
+```bash
+sudo -i
+cd /root/site-manager
+git pull
+exit
+```
+
+
+## Screenshots
+![Dashboard](assets/dash.png)
+![Management page](assets/mg1.png)
+![Plain Content](assets/plain.png)
+![Git Content](assets/git.png)

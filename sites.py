@@ -285,3 +285,45 @@ def is_icann(domain):
     if domain.split('.')[-1].upper() in tlds:
         return True
     return False
+
+def clone_git(name, url):
+    site = get_site(name)
+    id = site['id']
+    path = f'/var/www/{id}'
+    if not os.path.isdir(path):
+        os.mkdir(path)
+    os.system(f'git clone {url} {path}')
+
+    with open('sites.json', 'r') as file:
+        sites = json.loads(file.read())
+    for site in sites:
+        if site['name'] == name:
+            site['git'] = url
+            with open('sites.json', 'w') as file:
+                file.write(json.dumps(sites))
+            return True
+
+    return True
+
+def pull_git(name):
+    site = get_site(name)
+    id = site['id']
+    path = f'/var/www/{id}'
+    if not os.path.isdir(path):
+        return False
+    
+    # Check if it's a git repo
+    if not os.path.isdir(f'{path}/.git'):
+        # Remove git from sites.json
+        with open('sites.json', 'r') as file:
+            sites = json.loads(file.read())
+        for site in sites:
+            if site['name'] == name:
+                del site['git']
+                with open('sites.json', 'w') as file:
+                    file.write(json.dumps(sites))
+        return False
+    
+
+    os.system(f'cd {path} && git pull')
+    return True

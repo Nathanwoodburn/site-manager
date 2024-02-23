@@ -85,9 +85,16 @@ def manage_site(name):
     dns_info = sites_module.get_dns_info(name)
     dns_info = render.dns_info(dns_info)
 
+    git = f'<form action="/manage/{site["name"]}/clone" method="post"><input class="form-control form-control-user" type="text" name="url" placeholder="https://github.com/..." /><input class="btn btn-primary" type="submit" value="Clone Git via HTTPS" /></form>'
+    if "git" in site:
+        if site["git"]:
+            git = f'<p>Git repository <a href="{site["git"]}" target="_blank">{site["git"]}</a> added</p><a href="/manage/{site["name"]}/pull" class="btn btn-primary">Pull</a>'
+
+
     return render_template('manage.html', user=user, year=datetime.datetime.now().year,
                            site=site['name'], domain=site['domain'], enabled=site['active'],
-                           alt_domains=alt_domains, checked=checked, files=files, dns_info=dns_info)
+                           alt_domains=alt_domains, checked=checked,
+                           files=files, dns_info=dns_info, git=git)
 
 
 @app.route('/manage/<name>/alt', methods=['POST'])
@@ -166,9 +173,25 @@ def delete_site(name, file):
     return redirect('/manage/' + name)
 
 
+@app.route('/manage/<name>/clone', methods=['POST'])
+def clone_git(name):
+    site = sites_module.get_site(name)
+    if not site:
+        return "Error: Site not found."
 
+    data = request.form
+    url = data['url']
+    sites_module.clone_git(name, url)
+    return redirect('/manage/' + name)
 
+@app.route('/manage/<name>/pull')
+def pull_git(name):
+    site = sites_module.get_site(name)
+    if not site:
+        return "Error: Site not found."
 
+    sites_module.pull_git(name)
+    return redirect('/manage/' + name)
 
 
 
