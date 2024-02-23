@@ -155,7 +155,7 @@ def write_nginx_conf(site):
     site = get_site(site)
     domain = site['domain']
     id = site['id']
-    location = f'/root/site-manager/uploads/{site["name"]}'
+    location = f'/var/www/{id}'
 
     conf = f'''
     server {{
@@ -227,10 +227,6 @@ def write_nginx_conf(site):
     '''
     with open(f'/etc/nginx/sites-enabled/{id}.conf', 'w') as file:
         file.write(conf)
-
-    # Give read permissions to nginx for the /root/site-manager/uploads directory
-    os.system(f'chown -R www-data:www-data {location}')
-    os.system(f'chmod -R 755 {location}')
 
     # Restart nginx
     os.system('systemctl restart nginx')

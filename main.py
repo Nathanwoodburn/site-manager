@@ -127,16 +127,25 @@ def upload_site(name):
 
 
         filename = file.filename
-        file.save('uploads/' + name + '/' + filename)    
+        file.save('/var/www/{id}/{filename}'.format(id=site['id'], filename=filename))
     return "File uploaded successfully."
 
 @app.route('/manage/<name>/download/<file>')
 def download_site(name, file):
-    return send_from_directory('uploads/' + name, file, as_attachment=True)
+    site = sites_module.get_site(name)
+    if not site:
+        return "Error: Site not found."
+
+    return send_from_directory('/var/www/{id}'.format(id=site['id']), file)
+    
 
 @app.route('/manage/<name>/delete/<file>')
 def delete_site(name, file):
-    os.remove('uploads/' + name + '/' + file)
+    site = sites_module.get_site(name)
+    if not site:
+        return "Error: Site not found."
+    
+    os.remove('/var/www/{id}/{file}'.format(id=site['id'], file=file))    
     return redirect('/manage/' + name)
 
 
