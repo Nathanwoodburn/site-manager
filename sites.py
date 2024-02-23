@@ -267,10 +267,10 @@ def write_nginx_conf(site):
         for alt in site['alt_domains']:
             if is_icann(alt):
                 icann_domains.append(alt)
-
+    email = f'admin@{icann_domains[0]}'
     icann_domains = " -d ".join(icann_domains)
     icann_domains = f'-d {icann_domains}'
-    os.system(f'certbot --nginx {icann_domains} --non-interactive --agree-tos --email admin@{icann_domains[0]} --redirect')
+    os.system(f'certbot --nginx {icann_domains} --non-interactive --agree-tos --email {email} --redirect')
     return True
 
 
