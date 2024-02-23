@@ -189,15 +189,15 @@ def write_nginx_conf(site):
   server_name {domain} *.{domain};
 
     location / {{
-        try_files \$uri \$uri/ $uri/index.html @htmlext;
+        try_files $uri $uri/ @htmlext;
     }}
 
     location ~ \.html$ {{
-        try_files \$uri =404;
+        try_files $uri =404;
     }}
 
     location @htmlext {{
-        rewrite ^(.*)$ \$1.html last;
+        rewrite ^(.*)$ $1.html last;
     }}
     error_page 404 /404.html;
     location = /404.html {{
@@ -232,15 +232,15 @@ def write_nginx_conf(site):
     server_name {alt} *.{alt};
 
     location / {{
-        try_files \$uri \$uri/ $uri/index.html @htmlext;
+        try_files $uri $uri/ @htmlext;
     }}
 
     location ~ \.html$ {{
-        try_files \$uri =404;
+        try_files $uri =404;
     }}
 
     location @htmlext {{
-        rewrite ^(.*)$ \$1.html last;
+        rewrite ^(.*)$ $1.html last;
     }}
     error_page 404 /404.html;
     location = /404.html {{

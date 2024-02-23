@@ -8,7 +8,7 @@ fi
 
 # Install nginx
 sudo apt update
-sudo apt install nginx python3-pip -y
+sudo apt install nginx python3-pip zip unzip -y
 
 cd /root
 git clone https://git.woodburn.au/nathanwoodburn/site-manager.git
