@@ -123,9 +123,18 @@ def upload_site(name):
         if not os.path.isdir('/var/www/{id}'.format(id=site['id'])):
             os.mkdir('/var/www/{id}'.format(id=site['id']))
 
-
         filename = file.filename
         file.save('/var/www/{id}/{filename}'.format(id=site['id'], filename=filename))
+        # If .zip file, extract it to /var/www/{id}
+        if filename.endswith('.zip'):
+            os.system('unzip /var/www/{id}/{filename} -d /var/www/{id}'.format(id=site['id'], filename=filename))
+            os.remove('/var/www/{id}/{filename}'.format(id=site['id'], filename=filename))
+            # If all files are in a folder, move them to /var/www/{id}
+            files = os.listdir('/var/www/{id}'.format(id=site['id']))
+            if len(files) == 1 and os.path.isdir('/var/www/{id}/{file}'.format(id=site['id'], file=files[0])):
+                os.system('mv /var/www/{id}/{file}/* /var/www/{id}'.format(id=site['id'], file=files[0]))
+                os.system('rm -rf /var/www/{id}/{file}'.format(id=site['id'], file=files[0]))
+                        
     return "File uploaded successfully."
 
 @app.route('/manage/<name>/download/<file>')
@@ -133,8 +142,14 @@ def download_site(name, file):
     site = sites_module.get_site(name)
     if not site:
         return "Error: Site not found."
-
-    return send_from_directory('/var/www/{id}'.format(id=site['id']), file)
+    
+    if os.path.isfile('/var/www/{id}/{file}'.format(id=site['id'], file=file)):
+        return send_from_directory('/var/www/{id}'.format(id=site['id']), file, as_attachment=True)
+    
+    # if file is a directory, zip it and send it
+    if os.path.isdir('/var/www/{id}/{file}'.format(id=site['id'], file=file)):
+        os.system('cd /var/www/{id} && zip -r {file}.zip {file}'.format(id=site['id'], file=file))
+        return send_from_directory('/var/www/{id}'.format(id=site['id']), file + '.zip', as_attachment=True)
     
 
 @app.route('/manage/<name>/delete/<file>')
@@ -143,7 +158,11 @@ def delete_site(name, file):
     if not site:
         return "Error: Site not found."
     
-    os.remove('/var/www/{id}/{file}'.format(id=site['id'], file=file))    
+    # If file is a directory, remove it recursively
+    if os.path.isdir('/var/www/{id}/{file}'.format(id=site['id'], file=file)):
+        os.system('rm -rf /var/www/{id}/{file}'.format(id=site['id'], file=file))
+    else:
+        os.remove('/var/www/{id}/{file}'.format(id=site['id'], file=file))    
     return redirect('/manage/' + name)
 
 

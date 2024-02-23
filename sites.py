@@ -57,13 +57,17 @@ def add_site(name, domain):
     if not tlsa:
         return False
 
+    id = len(sites)
+    for site in sites:
+        if site['id'] >= id:
+            id = site['id'] + 1
 
     sites.append({
         'name': name,
         'domain': domain,
         'active': False,
         'tlsa': tlsa,
-        'id': len(sites)
+        'id': id
     })
 
     with open('sites.json', 'w') as file:
