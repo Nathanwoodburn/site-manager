@@ -1,5 +1,5 @@
 [Unit]
-Description=NGINX Traffic Monitor
+Description=NGINX Manager
 After=network.target
 
 [Service]
@@ -7,8 +7,8 @@ Type=simple
 ExecStart=/usr/bin/python3 /root/site-manager/main.py
 WorkingDirectory=/root/site-manager
 Restart=always
-User=nginx
-Group=nginx
+User=root
+Group=root
 
 [Install]
 WantedBy=multi-user.target

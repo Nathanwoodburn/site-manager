@@ -161,7 +161,7 @@ def write_nginx_conf(site):
     server {{
   listen 80;
   listen [::]:80;
-  root {location};
+  root '{location}';
   index index.html;
   server_name {domain} *.{domain};
 
@@ -197,7 +197,7 @@ def write_nginx_conf(site):
             server {{
     listen 80;
     listen [::]:80;
-    root {location};
+    root '{location}';
     index index.html;
     server_name {alt} *.{alt};
 
@@ -225,7 +225,7 @@ def write_nginx_conf(site):
     ssl_certificate_key /root/site-manager/certs/{alt}.key;
     }}
     '''
-    with open(f'/etc/nginx/sites-available/{id}.conf', 'w') as file:
+    with open(f'/etc/nginx/sites-enabled/{id}.conf', 'w') as file:
         file.write(conf)
 
     # Restart nginx
