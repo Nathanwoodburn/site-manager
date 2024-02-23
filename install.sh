@@ -20,3 +20,9 @@ python3 -m pip install -r requirements.txt
 sudo cp ./nginx-manager.service /etc/systemd/system/nginx-manager.service
 sudo systemctl start nginx-manager
 sudo systemctl enable nginx-manager
+
+# Install certbot
+sudo snap install core; sudo snap refresh core
+sudo apt remove certbot
+sudo snap install --classic certbot
+sudo ln -s /snap/bin/certbot /usr/bin/certbot

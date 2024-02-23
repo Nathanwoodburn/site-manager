@@ -51,11 +51,14 @@ def add_site(name, domain):
     if not os.path.isdir('certs'):
         os.mkdir('certs')
     
-    # Generate TLSA record
-    tlsa = os.popen(f'./tlsa.sh {domain}').read().strip()
-    print(tlsa)
-    if not tlsa:
-        return False
+    if is_icann(domain):
+        tlsa = "Not needed"
+    else:
+        # Generate TLSA record
+        tlsa = os.popen(f'./tlsa.sh {domain}').read().strip()
+        print(tlsa)
+        if not tlsa:
+            return False
 
     id = len(sites)
     for site in sites:
@@ -82,10 +85,14 @@ def add_alt_domain(name, domain):
                 site['alt_domains'] = []
             site['alt_domains'].append(domain)
 
-            # Generate TLSA record
-            tlsa = os.popen(f'./tlsa.sh {domain}').read().strip()
-            if not tlsa:
-                return False
+            if is_icann(domain):
+                tlsa = "Not needed"
+            else:
+                # Generate TLSA record
+                tlsa = os.popen(f'./tlsa.sh {domain}').read().strip()
+                print(tlsa)
+                if not tlsa:
+                    return False
             
             if 'alt_tlsa' not in site:
                 site['alt_tlsa'] = {}
@@ -164,6 +171,15 @@ def write_nginx_conf(site):
     id = site['id']
     location = f'/var/www/{id}'
 
+    ssl = ""
+    if not is_icann(domain):
+        ssl = f'''
+        listen 443 ssl;
+        ssl_certificate /root/site-manager/certs/{domain}/cert.crt;
+        ssl_certificate_key /root/site-manager/certs/{domain}/cert.key;
+        '''
+
+
     conf = f'''
     server {{
   listen 80;
@@ -191,15 +207,22 @@ def write_nginx_conf(site):
         add_header Cache-Control 'must-revalidate';
         add_header Content-Type text/plain;
     }}
-    listen 443 ssl;
-    ssl_certificate /root/site-manager/certs/{domain}/cert.crt;
-    ssl_certificate_key /root/site-manager/certs/{domain}/cert.key;
+    {ssl}
     }}
     '''
 
     # Add alt domains
     if 'alt_domains' in site:
         for alt in site['alt_domains']:
+            if not is_icann(alt):
+                ssl = f'''
+                listen 443 ssl;
+                ssl_certificate /root/site-manager/certs/{alt}/cert.crt;
+                ssl_certificate_key /root/site-manager/certs/{alt}/cert.key;
+                '''
+            else:
+                ssl = ""
+
             conf += f'''
             server {{
     listen 80;
@@ -237,4 +260,29 @@ def write_nginx_conf(site):
 
     # Restart nginx
     os.system('systemctl restart nginx')
+
+    # Create certs for ICANN domains
+    icann_domains = []
+    if is_icann(domain):
+        icann_domains.append(domain)
+    if 'alt_domains' in site:
+        for alt in site['alt_domains']:
+            if is_icann(alt):
+                icann_domains.append(alt)
+
+    icann_domains = " -d ".join(icann_domains)
+    icann_domains = f'-d {icann_domains}'
+    os.system(f'certbot --nginx {icann_domains} --non-interactive --agree-tos --email admin@{domain} --redirect')
     return True
+
+
+def is_icann(domain):
+    # Check if domain list is downloaded yet
+    if not os.path.isfile('icann.txt'):
+        os.system('wget https://data.iana.org/TLD/tlds-alpha-by-domain.txt -O icann.txt')
+
+    tlds = open('icann.txt', 'r').read().split('\n')
+    # Remove any comments
+    tlds = [tld for tld in tlds if not tld.startswith('#')]
+    if domain.split('.')[-1].upper() in tlds:
+        return True
