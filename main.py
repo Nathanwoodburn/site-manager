@@ -120,10 +120,8 @@ def upload_site(name):
         return "Error: No file provided."
 
     if file:
-        if not os.path.exists('uploads'):
-            os.makedirs('uploads')
-        if not os.path.exists('uploads/' + name):
-            os.makedirs('uploads/' + name)
+        if not os.path.isdir('/var/www/{id}'.format(id=site['id'])):
+            os.mkdir('/var/www/{id}'.format(id=site['id']))
 
 
         filename = file.filename
