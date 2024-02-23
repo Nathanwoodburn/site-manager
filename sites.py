@@ -270,7 +270,7 @@ def write_nginx_conf(site):
 
     icann_domains = " -d ".join(icann_domains)
     icann_domains = f'-d {icann_domains}'
-    os.system(f'certbot --nginx {icann_domains} --non-interactive --agree-tos --email admin@{domain} --redirect')
+    os.system(f'certbot --nginx {icann_domains} --non-interactive --agree-tos --email admin@{icann_domains[0]} --redirect')
     return True
 
 
