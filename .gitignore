@@ -1,0 +1,12 @@
+
+__pycache__/
+
+accounts.json
+
+cookies.json
+
+sites.json
+
+uploads/
+
+certs/

@@ -1,0 +1,1 @@
+.drop-zone{width:100%;min-height:100px;border:2px dashed #ccc;border-radius:5px;padding:20px;box-sizing:border-box;text-align:center;cursor:pointer}.drop-zone.drag-over{background-color:#f0f0f0}input[type=file]{display:none}
