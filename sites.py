@@ -114,7 +114,10 @@ def enable(name, enable):
     return False
 
 def get_content(site):
-    path = f'uploads/{site}'
+    site = get_site(site)
+    id = site['id']
+
+    path = f'/var/www/{id}'
     if not os.path.isdir(path):
         return []
     files = os.listdir(path)
