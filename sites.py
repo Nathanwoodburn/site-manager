@@ -185,8 +185,8 @@ def write_nginx_conf(site):
         add_header Content-Type text/plain;
     }}
     listen 443 ssl;
-    ssl_certificate /root/site-manager/certs/{domain}.crt;
-    ssl_certificate_key /root/site-manager/certs/{domain}.key;
+    ssl_certificate /root/site-manager/certs/{domain}/cert.crt;
+    ssl_certificate_key /root/site-manager/certs/{domain}/cert.key;
     }}
     '''
 
@@ -221,8 +221,8 @@ def write_nginx_conf(site):
         add_header Content-Type text/plain;
     }}
     listen 443 ssl;
-    ssl_certificate /root/site-manager/certs/{alt}.crt;
-    ssl_certificate_key /root/site-manager/certs/{alt}.key;
+    ssl_certificate /root/site-manager/certs/{alt}/cert.crt;
+    ssl_certificate_key /root/site-manager/certs/{alt}/cert.key;
     }}
     '''
     with open(f'/etc/nginx/sites-enabled/{id}.conf', 'w') as file:
