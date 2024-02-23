@@ -169,7 +169,7 @@ def write_nginx_conf(site):
   server_name {domain} *.{domain};
 
     location / {{
-        try_files \$uri \$uri/ @htmlext;
+        try_files \$uri \$uri/ $uri/index.html @htmlext;
     }}
 
     location ~ \.html$ {{
@@ -205,7 +205,7 @@ def write_nginx_conf(site):
     server_name {alt} *.{alt};
 
     location / {{
-        try_files \$uri \$uri/ @htmlext;
+        try_files \$uri \$uri/ $uri/index.html @htmlext;
     }}
 
     location ~ \.html$ {{
