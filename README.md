@@ -2,6 +2,8 @@
 A simple web server manager for managing multiple websites on a single server.
 It is designed to be simple and easy to use, supporting HNS domains out of the box.
 
+[YouTube Tutorial](https://youtu.be/a_QVf6NpKZk)
+
 Installation
 ------------
 
